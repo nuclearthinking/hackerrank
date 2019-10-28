@@ -3,12 +3,12 @@
 
 # Complete the activityNotifications function below.
 import timeit
-from collections import defaultdict
+from typing import Callable
 
 import numpy
 
 
-def median(nums):
+def median_v1(nums):
     length = len(nums)
     sorted_nums = sorted(nums)
     if length % 2 == 0:
@@ -21,15 +21,11 @@ def median(nums):
     return sorted_nums[index]
 
 
-def make_histogram(nums):
-    histogram_result = defaultdict(int)
-    for i in nums:
-        histogram_result[i] += 1
-    return histogram_result
-
-
-def make_histogram_v2(nums):
-    return {i: nums.count(i) for i in range(0, 201)}
+def make_histogram(_nums):
+    histogram = {i: 0 for i in range(0, 200)}
+    for i in _nums:
+        histogram[i] += 1
+    return histogram
 
 
 def median_v2(nums):
@@ -42,45 +38,41 @@ def median_v2(nums):
             return value
 
 
-def median_v3(nums):
-    histogram = make_histogram_v2(nums)
-    total = 0
-    median_index = (sum(histogram.values()) + 1) / 2
-    for value in sorted(histogram.keys()):
-        total += histogram[value]
-        if total > median_index:
-            return value
-
-
 def median_v4(nums):
     return numpy.median(nums)
 
 
-def activityNotifications(expenditure, d):
+def median_v5(nums):
+    nums = sorted(nums)
+    if len(nums) % 2 == 1:
+        return nums[int(len(nums) / 2)]
+    else:
+        return 0.5 * (nums[int(len(nums) / 2 - 1)] + nums[int(len(nums) / 2)])
+
+
+def activityNotifications(expenditure, d, median_method: Callable):
     notifications_count = 0
     initial_part, other_part = expenditure[:d], expenditure[d:]
-    other_part = iter(other_part)
     processed_items = len(initial_part)
     total_items = len(expenditure)
-    while other_part:
-        _med = median_v3(initial_part)
-        print(
-            f'median is {_med}, current notifications {notifications_count} processed items {processed_items}/{total_items}')
-        next_item = next(other_part, None)
+    progress = 0
+    for i in other_part:
+        _med = median_method(initial_part)
+        if i >= _med * 2:
+            notifications_count += 1
+        initial_part.__delitem__(0)
+        initial_part.append(i)
+        progress_new = int(processed_items / (total_items * 0.01))
+        if progress != progress_new:
+            print(f'progress: {progress_new}%')
+        progress = progress_new
         processed_items += 1
-        if next_item is not None:
-            if next_item >= _med * 2:
-                notifications_count += 1
-            initial_part.__delitem__(0)
-            initial_part.append(next_item)
-        else:
-            break
-
+        old_i = i
     return notifications_count
 
 
 if __name__ == '__main__':
-    input_data = open('1.txt', 'r')
+    input_data = open('input_data/1.txt', 'r')
 
     nd = input_data.readline().split()
 
@@ -90,8 +82,8 @@ if __name__ == '__main__':
 
     expenditure = list(map(int, input_data.readline().rstrip().split()))
     start = timeit.default_timer()
-    result = activityNotifications(expenditure, d)
+    method = median_v2
+    result = activityNotifications(expenditure, d, median_method=method)
     end = timeit.default_timer()
-
-    print(f'Result is {result}')
-    print(f'Time spend is {int(end - start) / 60} minutes or {int(end - start)} seconds')
+    total_time = end - start
+    print(f'{method.__name__}: notification_count = {result}, time elapsed {int(total_time / 60)}m {int(total_time % 60)}s')

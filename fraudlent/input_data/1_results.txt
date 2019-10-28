@@ -1,0 +1,4 @@
+median_v1: notification_count = 616, time elapsed 18m 28s
+median_v2: notification_count = 601, time elapsed 2m 26s
+median_v4: notification_count = 616, time elapsed 2m 0s
+median_v5: notification_count = 616, time elapsed 6m 29s
