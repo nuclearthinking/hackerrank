@@ -67,7 +67,6 @@ def activityNotifications(expenditure, d, median_method: Callable):
             print(f'progress: {progress_new}%')
         progress = progress_new
         processed_items += 1
-        old_i = i
     return notifications_count
 
 
