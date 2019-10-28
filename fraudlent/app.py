@@ -70,6 +70,44 @@ def activityNotifications(expenditure, d, median_method: Callable):
     return notifications_count
 
 
+def median_v6(histogram):
+    total = 0
+    median_index = (sum(histogram.values()) + 1) / 2
+    for value in sorted(histogram.keys()):
+        total += histogram[value]
+        if total > median_index:
+            return value
+
+
+def activityNotifications_v2(expenditure, d, median_method: Callable):
+    notifications_count = 0
+    initial_part, other_part = expenditure[:d], expenditure[d:]
+    processed_items = len(initial_part)
+    total_items = len(expenditure)
+    progress = 0
+    histogram = make_histogram(initial_part)
+    for i in other_part:
+        histogram[i] = histogram[i]+1
+        total = 0
+        median_index = (sum(histogram.values()) + 1) / 2
+        for value in sorted(histogram.keys()):
+            total += histogram[value]
+            if total > median_index:
+                if i > value * 2:
+                    notifications_count += 1
+                else:
+                    break
+        histogram[i] = histogram[i]-1
+        # initial_part.__delitem__(0)
+        # initial_part.append(i)
+        progress_new = int(processed_items / (total_items * 0.01)) + 1
+        if progress != progress_new:
+            print(f'progress: {progress_new}%')
+        progress = progress_new
+        processed_items += 1
+    return notifications_count
+
+
 if __name__ == '__main__':
     input_data = open('input_data/1.txt', 'r')
 
@@ -82,7 +120,7 @@ if __name__ == '__main__':
     expenditure = list(map(int, input_data.readline().rstrip().split()))
     start = timeit.default_timer()
     method = median_v2
-    result = activityNotifications(expenditure, d, median_method=method)
+    result = activityNotifications_v2(expenditure, d, median_method=method)
     end = timeit.default_timer()
     total_time = end - start
     print(f'{method.__name__}: notification_count = {result}, time elapsed {int(total_time / 60)}m {int(total_time % 60)}s')
