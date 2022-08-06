@@ -22,7 +22,7 @@ def median_v1(nums):
 
 
 def make_histogram(_nums):
-    histogram = {i: 0 for i in range(0, 200)}
+    histogram = {i: 0 for i in range(200)}
     for i in _nums:
         histogram[i] += 1
     return histogram
@@ -45,9 +45,9 @@ def median_v4(nums):
 def median_v5(nums):
     nums = sorted(nums)
     if len(nums) % 2 == 1:
-        return nums[int(len(nums) / 2)]
+        return nums[len(nums) // 2]
     else:
-        return 0.5 * (nums[int(len(nums) / 2 - 1)] + nums[int(len(nums) / 2)])
+        return 0.5 * (nums[int(len(nums) / 2 - 1)] + nums[len(nums) // 2])
 
 
 def activityNotifications(expenditure, d, median_method: Callable):
